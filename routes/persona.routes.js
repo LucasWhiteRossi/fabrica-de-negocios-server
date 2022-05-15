@@ -77,9 +77,26 @@ router.put('/editar-persona/:personaId', isAuth, attachCurrentUser, async (req, 
     }
 })
 
+router.delete("/deletar-persona/:personaId", isAuth, attachCurrentUser, async (req, res) => {
+    try {
+        
+        const personaId = req.params.personaId;
+        const personaDeletada = await PersonaModel.findOneAndDelete({ _id: personaId })
 
+          await PersonaModel.findOneAndUpdate(
+            {_id: req.currentUser._id},
+            {$pull: { vinculo: personaDeletada._id } },
+            {runValidators: true, new: true}
+        );
 
+        return res.status(200).json(personaDeletada)
 
+    }catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+    }
+
+});
 
 
 module.exports = router;
