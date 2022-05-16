@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const personaSchema = new Schema({
     owner:  {type: mongoose.Types.ObjectId, ref: "User", required:true},
-    vinculoNegocio: [{type: mongoose.Types.ObjectId, ref: "ModeloNegocio"}],
+    vinculoNegocio: {type: mongoose.Types.ObjectId, ref: "ModeloNegocio"},
     nome: { type: String },
     idade: { type: Number},
     declarado: { type: String, enum: ["heterossexual", "lésbica", "gay", "bissexual", "transexual", "travesti", "transgênero", "queer", "intersexo", "assexual", "agênero", "arromântico", "pansexual", "outros"] },
