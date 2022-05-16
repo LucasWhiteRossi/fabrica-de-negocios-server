@@ -20,7 +20,7 @@ router.post('/criar-negocio', isAuth, attachCurrentUser, async (req, res) => {
             {runValidators: true, new: true}
         );
 
-        return res.status(201).json(novaPersona)
+        return res.status(201).json(novoNegocio)
     } catch (error) {
         console.log(error)
         return res.status(500).json({ msg: error })
