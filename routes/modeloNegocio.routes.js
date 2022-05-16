@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const UserModel = require ("../models/User.model")
+const PersonaModel = require("../models/Persona.model")
 const ModeloNegocioModel = require("../models/ModeloNegocio.model")
 
 const isAuth = require("../middlewares/isAuth");
@@ -41,16 +42,16 @@ router.get('/negocios', isAuth, attachCurrentUser, async (req, res) => {
     }
 });
 
-router.get('/personas/:personaId', isAuth, attachCurrentUser, async (req, res) => {
+router.get('/negocios/:negocioId', isAuth, attachCurrentUser, async (req, res) => {
     try{
 
-        const personaId = req.params.personaId
-        const persona = await PersonaModel.findOne({
-           _id: personaId,
+        const negocioId = req.params.negocioId
+        const negocio = await ModeloNegocioModel.findOne({
+           _id: negocioId,
            owner: req.currentUser._id 
         })
 
-        return res.status(200).json(persona);
+        return res.status(200).json(negocio);
 
 
     }catch(error){
@@ -82,10 +83,19 @@ router.delete("/deletar-negocio/:negocioId", isAuth, attachCurrentUser, async (r
         const negocioId = req.params.negocioId;
         const negocioDeletado = await ModeloNegocioModel.findOneAndDelete({ _id: negocioId })
 
-          await ModeloNegocioModel.findOneAndUpdate(
-            {_id: req.currentUser._id},
-            {$pull: { vinculoNegocio: negocioDeletado._id } },
+        negocioDeletado.vinculoPersona.map( (obj) => {
+            await PersonaModel.findOneAndUpdate(
+                {_id: obj._id},
+                {$pull: { vinculoNegocio: negocioDeletado._id } },
+                {runValidators: true, new: true}
+            );
+        })  
+
+        await UserModel.findOneAndUpdate(
+            {_id: negocioDeletado.owner},
+            {$pull: {vinculoPersona: negocioDeletado._id}},
             {runValidators: true, new: true}
+
         );
 
         return res.status(200).json(negocioDeletado)
