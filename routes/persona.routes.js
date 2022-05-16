@@ -121,8 +121,8 @@ router.patch('/desvincular-persona/:personaId/:negocioId', isAuth, attachCurrent
         );
 
         await ModeloNegocioModel.findOneAndUpdate(
-            {_id: req.currentUser._id},
-            {$pull: { vinculoPersona: personaDeletada._id } },
+            {_id: negocioId},
+            {$pull: { vinculoPersona: updatePersona._id } },
             {runValidators: true, new: true}
         );
 
@@ -131,7 +131,32 @@ router.patch('/desvincular-persona/:personaId/:negocioId', isAuth, attachCurrent
     }catch (error){
     return res.status(500).json(error)   
     }
-})
+});
+
+router.patch('/vincular-persona/:personaId/:negocioId', isAuth, attachCurrentUser, async (req, res) => {
+    try {
+
+        const personaId = req.params.personaId
+        const negocioId = req.params.negocioId
+
+        const updatePersona = await PersonaModel.findByIdAndUpdate(
+            {_id: personaId},
+            {vinculoNegocio: negocioId },
+            {runValidators: true, new: true},
+        );
+
+        await ModeloNegocioModel.findOneAndUpdate(
+            {_id: negocioId},
+            {$push: { vinculoPersona: updatePersona._id } },
+            {runValidators: true, new: true}
+        );
+
+        return res.status(200).json(updatePersona)
+
+    }catch (error){
+    return res.status(500).json(error)   
+    }
+});
 
 router.delete("/deletar-persona/:personaId", isAuth, attachCurrentUser, async (req, res) => {
     try {
@@ -139,10 +164,18 @@ router.delete("/deletar-persona/:personaId", isAuth, attachCurrentUser, async (r
         const personaId = req.params.personaId;
         const personaDeletada = await PersonaModel.findOneAndDelete({ _id: personaId })
 
-          await PersonaModel.findOneAndUpdate(
-            {_id: req.currentUser._id},
+            //Atualizar modelo de negcio: desvincular persona removida
+        await ModeloNegocioModel.findOneAndUpdate(
+            {_id: personaDeletada.vinculoNegocio},
             {$pull: { vinculoPersona: personaDeletada._id } },
             {runValidators: true, new: true}
+        );
+
+        await UserModel.findOneAndUpdate(
+            {_id: personaDeletada.owner},
+            {$pull: {vinculoPersona: personaDeletada._id}},
+            {runValidators: true, new: true}
+
         );
 
         return res.status(200).json(personaDeletada)
