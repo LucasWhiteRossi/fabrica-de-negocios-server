@@ -17,7 +17,7 @@ router.post('/criar-persona', isAuth, attachCurrentUser, async (req, res) => {
         )
         await UserModel.findOneAndUpdate(
             {_id: req.currentUser._id},
-            {$push: { vinculo: novaPersona._id } },
+            {$push: { vinculoPersona: novaPersona._id } },
             {runValidators: true, new: true}
         );
 
@@ -85,7 +85,7 @@ router.delete("/deletar-persona/:personaId", isAuth, attachCurrentUser, async (r
 
           await PersonaModel.findOneAndUpdate(
             {_id: req.currentUser._id},
-            {$pull: { vinculo: personaDeletada._id } },
+            {$pull: { vinculoPersona: personaDeletada._id } },
             {runValidators: true, new: true}
         );
 

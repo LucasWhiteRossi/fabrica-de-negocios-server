@@ -65,8 +65,22 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/profile", isAuth, attachCurrentUser, (req, res) => {
-  return res.status(200).json(req.currentUser);
+router.get("/profile", isAuth, attachCurrentUser, async (req, res) => {
+  
+  try{
+    const loggedInUser = req.currentUser;
+  
+    const getUser = await UserModel.findOne(
+      { _id: loggedInUser._id }
+  ).populate("vinculoPersona").populate("vinculoNegocio");
+  
+  return res.status(200).json(getUser);
+
+  }catch (error) {
+    console.log(error);
+    return res.status(200).json(req.currentUser);
+  }
+  
 });
 
 router.patch("/update-profile", isAuth, attachCurrentUser, async (req, res) => {
