@@ -83,13 +83,19 @@ router.delete("/deletar-negocio/:negocioId", isAuth, attachCurrentUser, async (r
         const negocioId = req.params.negocioId;
         const negocioDeletado = await ModeloNegocioModel.findOneAndDelete({ _id: negocioId })
 
-        negocioDeletado.vinculoPersona.map( (obj) => {
+        
+        /* negocioDeletado.vinculoPersona.map( (obj) => {
                 PersonaModel.findOneAndUpdate(
                 {_id: obj._id},
                 { vinculoNegocio: null },
                 {runValidators: true, new: true}
             );
-        })  
+        })   */
+        await PersonaModel.updateMany(
+            {vinculoNegocio: negocioId},
+            {vinculoNegocio: null},
+            {runValidators: true, new: true}
+        );
 
         await UserModel.findOneAndUpdate(
             {_id: negocioDeletado.owner},
