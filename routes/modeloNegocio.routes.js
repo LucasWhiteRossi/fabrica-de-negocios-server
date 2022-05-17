@@ -84,9 +84,9 @@ router.delete("/deletar-negocio/:negocioId", isAuth, attachCurrentUser, async (r
         const negocioDeletado = await ModeloNegocioModel.findOneAndDelete({ _id: negocioId })
 
         negocioDeletado.vinculoPersona.map( (obj) => {
-                 PersonaModel.findOneAndUpdate(
+                PersonaModel.findOneAndUpdate(
                 {_id: obj._id},
-                {$pull: { vinculoNegocio: negocioDeletado._id } },
+                { vinculoNegocio: null },
                 {runValidators: true, new: true}
             );
         })  
