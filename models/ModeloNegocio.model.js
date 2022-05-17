@@ -4,6 +4,7 @@ const Schema = mongoose.Schema
 const modeloNegocioSchema = new Schema({
     owner:  {type: mongoose.Types.ObjectId, ref: "User", required:true},
     vinculoPersona: [{type: mongoose.Types.ObjectId, ref: "Persona"}],
+    nome: { type: String }, 
     beneficio: { type: String },
     solucao: { type: String },
     produtos: { type: String },
