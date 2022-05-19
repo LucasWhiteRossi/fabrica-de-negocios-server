@@ -27,7 +27,8 @@ const personaSchema = new Schema({
     desafios: { type: String },
     objecoes: { type: String },
     oportunidades: { type: String },
-    "papel-persona": { type: String },	
+    "papel-persona": { type: String },
+    informacoesAdicionais: { type: String }
 
 });
 

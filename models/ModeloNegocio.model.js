@@ -34,6 +34,7 @@ const modeloNegocioSchema = new Schema({
     custoRelevante: { type: String },
     tipoRecurso: { type: String },
     despesasAtividades: { type: String },
+    informacoesAdicionais: { type: String }
 });
 
 const ModeloNegocioModel = mongoose.model("ModeloNegocio", modeloNegocioSchema)
